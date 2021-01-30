@@ -1,87 +1,34 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react'
-import {loadProfile} from '../../actions'
+import {loadProfile, updateProfile, logout} from '../../actions'
+import AuthForm from '../forms/AuthForm'
 
 class Profile extends Component {
-    constructor() {
-        super();
-        this.state = {
-        email : '',
-        password: ''
-        }
-    }
+    onSubmit = async formValues => {
+        await this.props.updateProfile(formValues);
+        this.props.loadProfile()
+    };
 
     componentDidMount = async () => {
         await this.props.loadProfile();
-        this.setState({
-            email: this.props.profile.email,
-            password: this.props.profile.password
-        })
-    }
-
-    handleInputChange = (event) => {
-        const { value, name } = event.target;
-        this.setState({
-        [name]: value
-        });
-    }
-
-    onSubmit = (event) => {
-        event.preventDefault();
-
-        fetch('/user/update', {
-        method: 'PATCH',
-        body: JSON.stringify(this.state),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-        })
-        .then(res => res.text())
-        .then(res => alert(res))
-    }
-
-    logout = () => {
-        fetch('/user/logout')
-        .then(res => {
-        if (res.status === 200) {
-            alert('Logged Out')
-            this.props.history.push('/')
-        } else {
-            const error = new Error(res.error);
-            throw error;
-        }
-        })
     }
 
     render() {
         return (
         <div>
-            <h1>Profile</h1>
-            <form onSubmit={this.onSubmit}>
-            <input
-                type="email"
-                name="email"
-                value={this.state.email}
-                onChange={this.handleInputChange}
-                required
-            />
-            <input
-                type="password"
-                name="password"
-                value={this.state.password}
-                onChange={this.handleInputChange}
-                required
-            />
-            <button type="submit" value="Submit">Update</button>
-            </form>
-            <button onClick={this.logout}>Logout</button>
+            <h3>Email: {this.props.profile.email}</h3>
+            <h3>Hashed Password: {this.props.profile.password}</h3>
+            <h2>Update Profile below</h2>
+            <AuthForm onSubmit={this.onSubmit} />
+            <br/>
+            <button onClick={()=>this.props.logout()}>Logout</button>
         </div>
         );
     }
 }
 
 const mapStateToProps = (state) => {
-    return {profile: state.profile}
+    return {profile: state.auth}
 }
 
-export default connect(mapStateToProps, {loadProfile})(Profile)
+export default connect(mapStateToProps, {loadProfile, updateProfile, logout})(Profile)
