@@ -1,0 +1,2 @@
+export const WELCOME_MESSAGE = 'WELCOME_MESSAGE'
+export const LOAD_PROFILE = 'LOAD_PROFILE'
