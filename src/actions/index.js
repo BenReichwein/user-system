@@ -1,7 +1,10 @@
 import history from '../history'
 import {
     WELCOME_MESSAGE,
+    LOGIN,
+    LOGOUT,
     LOAD_PROFILE,
+    GET_POST
 } from './types';
 //
 //-> Messages
@@ -15,8 +18,8 @@ export const welcomeMessage = () => async (dispatch) => {
 //
 //-> Authentications
 //
-export const login = (formValues) => () => {
-  fetch(`/user/login`, {
+export const login = (formValues) => async (dispatch) => {
+  const response = await fetch(`/user/login`, {
     method: 'POST',
     body: JSON.stringify({
       email: formValues.email,
@@ -26,18 +29,14 @@ export const login = (formValues) => () => {
       'Content-Type': 'application/json'
     }
   })
-  .then(res => {
-    if (res.status === 200) {
-      history.push('/')
-    } else {
-      const error = new Error(res.error);
-      throw error;
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('Error logging in, please try again');
-  });
+  if (response.status === 200) {
+    history.push('/')
+  } else {
+    alert('Error: Email or password is incorrect')
+  }
+  const userId = await response.text();
+
+  dispatch({ type: LOGIN, payload: userId});
 };
 
 export const register = (formValues) => () => {
@@ -65,7 +64,7 @@ export const register = (formValues) => () => {
   });
 };
 
-export const logout = () => async () => {
+export const logout = () => async (dispatch) => {
   const response = await fetch('/user/logout')
   if (response.status === 200) {
     alert('Logged Out')
@@ -73,6 +72,8 @@ export const logout = () => async () => {
   } else {
     alert(`Error: ${response.error}`)
   }
+
+  dispatch({ type: LOGOUT });
 };
 
 export const loadProfile = () => async (dispatch) => {
@@ -95,4 +96,31 @@ export const updateProfile = (formValues) => () => {
     })
     .then(res => res.text())
     .then(res => alert(res))
+};
+//
+//-> Posts
+//
+export const createPost = (formValues) => async () => {
+  const response = await fetch(`/posts`, {
+    method: 'POST',
+    body: JSON.stringify({
+      title: formValues.title,
+      description: formValues.description
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  if (response.status === 200) {
+    alert('Posted!')
+  } else {
+    alert('Error: you need to be logged in to post')
+  }
+};
+
+export const getPost = () => async (dispatch) => {
+  const response = await fetch('/posts')
+  const post = await response.json();
+
+  dispatch({ type: GET_POST, payload: post});
 };

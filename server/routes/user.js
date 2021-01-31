@@ -76,7 +76,7 @@ const user = (app) => {
                 const token = jwt.sign(payload, secret, {
                     expiresIn: '7d'
                 });
-                res.cookie('token', token, { httpOnly: true }).sendStatus(200);
+                res.cookie('token', token, { httpOnly: true }).send(user._id);
                 }
             });
             }

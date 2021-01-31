@@ -29,8 +29,7 @@ const posts = (app) => {
         });
         try {
             await post.save();
-            const posts = await Post.find();
-            res.json(posts)
+            res.status(200).send('Posted!')
         } catch (err) {
             res.send(`Error ${err}`)
         }

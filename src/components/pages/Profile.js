@@ -28,7 +28,7 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {profile: state.auth}
+    return {profile: state.profile}
 }
 
 export default connect(mapStateToProps, {loadProfile, updateProfile, logout})(Profile)
