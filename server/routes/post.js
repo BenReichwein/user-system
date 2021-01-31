@@ -29,7 +29,8 @@ const posts = (app) => {
         });
         try {
             await post.save();
-            res.status(200).send('Posted!')
+            const posts = await Post.find();
+            res.json(posts)
         } catch (err) {
             res.send(`Error ${err}`)
         }
@@ -61,6 +62,15 @@ const posts = (app) => {
                 {$set: {title:req.body.title}}
             );
             res.json(updatedPost);
+        } catch (err) {
+            res.send(`Error ${err}`)
+        }
+    })
+    // Get Users Posts
+    app.get('/userPosts/:userId', async (req, res) => {
+        try {
+            const post = await Post.find({ user: req.params.userId })
+            res.status(200).json(post)
         } catch (err) {
             res.send(`Error ${err}`)
         }

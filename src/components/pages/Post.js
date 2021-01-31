@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createPost, getPost } from '../../actions';
+import { createPost, getPost, deletePost } from '../../actions';
 import PostForm from '../forms/PostForm';
 
 class Post extends React.Component {
@@ -20,13 +20,13 @@ class Post extends React.Component {
                         <h3>Post List</h3>
                         <ul>
                             { this.props.posts.map(post =>
-                            <li>
+                            <li key={post._id}>
                                 <label>
                                     {post.title}<br/>
                                     {post.description}<br/>
                                 </label>
-                                <button>Delete</button>
-                                <button onClick={()=> alert(post.user)}>User</button>
+                                <button onClick={()=> this.props.deletePost(post._id)}>Delete</button>
+                                <button onClick={()=> this.props.history.push(`/userProfile/${post.user}`)}>User</button>
                             </li>
                             )}
                         </ul>
@@ -40,7 +40,14 @@ class Post extends React.Component {
             )
         } else {
             return (
-                <div>Loading...</div>
+                <div>
+                    <p>There's no posts to view...</p>
+                    <br/>
+                    <div>
+                        <h3>Create a Post</h3>
+                        <PostForm onSubmit={this.onSubmit} />
+                    </div>
+                </div>
             )
         }
     }
@@ -52,5 +59,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  { createPost, getPost }
+  { createPost, getPost, deletePost }
 )(Post);

@@ -1,8 +1,6 @@
 import history from '../history'
 import {
     WELCOME_MESSAGE,
-    LOGIN,
-    LOGOUT,
     LOAD_PROFILE,
     GET_POST
 } from './types';
@@ -18,7 +16,7 @@ export const welcomeMessage = () => async (dispatch) => {
 //
 //-> Authentications
 //
-export const login = (formValues) => async (dispatch) => {
+export const login = (formValues) => async () => {
   const response = await fetch(`/user/login`, {
     method: 'POST',
     body: JSON.stringify({
@@ -34,9 +32,6 @@ export const login = (formValues) => async (dispatch) => {
   } else {
     alert('Error: Email or password is incorrect')
   }
-  const userId = await response.text();
-
-  dispatch({ type: LOGIN, payload: userId});
 };
 
 export const register = (formValues) => () => {
@@ -64,7 +59,7 @@ export const register = (formValues) => () => {
   });
 };
 
-export const logout = () => async (dispatch) => {
+export const logout = () => async () => {
   const response = await fetch('/user/logout')
   if (response.status === 200) {
     alert('Logged Out')
@@ -72,8 +67,6 @@ export const logout = () => async (dispatch) => {
   } else {
     alert(`Error: ${response.error}`)
   }
-
-  dispatch({ type: LOGOUT });
 };
 
 export const loadProfile = () => async (dispatch) => {
@@ -100,7 +93,7 @@ export const updateProfile = (formValues) => () => {
 //
 //-> Posts
 //
-export const createPost = (formValues) => async () => {
+export const createPost = (formValues) => async (dispatch) => {
   const response = await fetch(`/posts`, {
     method: 'POST',
     body: JSON.stringify({
@@ -112,7 +105,9 @@ export const createPost = (formValues) => async () => {
     }
   })
   if (response.status === 200) {
-    alert('Posted!')
+    const post = await response.json();
+
+    dispatch({ type: GET_POST, payload: post});
   } else {
     alert('Error: you need to be logged in to post')
   }
@@ -124,3 +119,19 @@ export const getPost = () => async (dispatch) => {
 
   dispatch({ type: GET_POST, payload: post});
 };
+
+export const deletePost = (id) => async (dispatch) => {
+  const response = await fetch(`/posts/${id}`, {
+    method: 'DELETE'
+  })
+  const post = await response.json();
+
+  dispatch({ type: GET_POST, payload: post});
+};
+
+export const getUsersPosts = (uid) => async (dispatch) => {
+  const response = await fetch(`/userPosts/${uid}`)
+  const post = await response.json();
+
+  dispatch({ type: GET_POST, payload: post});
+}

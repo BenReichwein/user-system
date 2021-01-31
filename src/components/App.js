@@ -6,6 +6,7 @@ import withAuth from './withAuth'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
+import UserProfile from './pages/UserProfile'
 import Post from './pages/Post'
 
 const App = () => {
@@ -19,7 +20,7 @@ const App = () => {
             <Route path="/post" exact component={Post} />
             <Route path="/login" exact component={Login} />
             <Route path="/profile" component={withAuth(Profile)} />
-            {/* <Route path="/profile/:id" exact component={StreamShow} /> */}
+            <Route path="/userProfile/:id" exact component={UserProfile} />
           </Switch>
         </div>
       </Router>
