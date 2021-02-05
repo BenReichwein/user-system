@@ -2,7 +2,8 @@ import history from '../history'
 import {
     WELCOME_MESSAGE,
     LOAD_PROFILE,
-    GET_POST
+    GET_POST,
+    GET_UID
 } from './types';
 //
 //-> Messages
@@ -16,24 +17,6 @@ export const welcomeMessage = () => async (dispatch) => {
 //
 //-> Authentications
 //
-export const login = (formValues) => async () => {
-  const response = await fetch(`/user/login`, {
-    method: 'POST',
-    body: JSON.stringify({
-      email: formValues.email,
-      password: formValues.password
-    }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  if (response.status === 200) {
-    history.push('/')
-  } else {
-    alert('Error: Email or password is incorrect')
-  }
-};
-
 export const register = (formValues) => () => {
   fetch(`/user/register`, {
     method: 'POST',
@@ -57,6 +40,24 @@ export const register = (formValues) => () => {
     console.error(err);
     alert('Error registering, please try again');
   });
+};
+
+export const login = (formValues) => async () => {
+  const response = await fetch(`/user/login`, {
+    method: 'POST',
+    body: JSON.stringify({
+      email: formValues.email,
+      password: formValues.password
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  if (response.status === 200) {
+    history.push('/')
+  } else {
+    alert('Error: Email or password is incorrect')
+  }
 };
 
 export const logout = () => async () => {
@@ -134,4 +135,11 @@ export const getUsersPosts = (uid) => async (dispatch) => {
   const post = await response.json();
 
   dispatch({ type: GET_POST, payload: post});
+}
+
+export const getUid = () => async (dispatch) => {
+  const response = await fetch(`/user/getUid`)
+  const uid = await response.text();
+
+  dispatch({ type: GET_UID, payload: uid});
 }

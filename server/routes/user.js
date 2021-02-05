@@ -76,7 +76,7 @@ const user = (app) => {
                 const token = jwt.sign(payload, secret, {
                     expiresIn: '7d'
                 });
-                res.cookie('token', token, { httpOnly: true }).send(user._id);
+                res.cookie('token', token, { httpOnly: true });
                 }
             });
             }
@@ -101,6 +101,22 @@ const user = (app) => {
         await User.findByIdAndUpdate(decoded.id, updateQuery);
 
         return res.status(200).send("Updated!");
+    })
+
+    app.get('/user/getUid', async (req, res) => {
+        const token = 
+            req.body.token ||
+            req.query.token ||
+            req.headers['x-access-token'] ||
+            req.cookies.token;  
+        
+        const decoded = jwt.verify(token, appSecret);
+
+        if (token) {
+            return res.status(200).send(decoded.id);
+        } else {
+            return res.status(400).send(null)
+        }
     })
 
     app.get('/user/logout', function(req, res) {
