@@ -76,7 +76,8 @@ const user = (app) => {
                 const token = jwt.sign(payload, secret, {
                     expiresIn: '7d'
                 });
-                res.cookie('token', token, { httpOnly: true });
+                res.cookie('token', token, { httpOnly: true }).sendStatus(200);
+                console.log('done')
                 }
             });
             }
@@ -109,13 +110,12 @@ const user = (app) => {
             req.query.token ||
             req.headers['x-access-token'] ||
             req.cookies.token;  
-        
-        const decoded = jwt.verify(token, appSecret);
 
         if (token) {
+            const decoded = jwt.verify(token, appSecret);
             return res.status(200).send(decoded.id);
         } else {
-            return res.status(400).send(null)
+            return res.status(401).send(null)
         }
     })
 
