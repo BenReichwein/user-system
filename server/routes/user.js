@@ -77,7 +77,6 @@ const user = (app) => {
                     expiresIn: '7d'
                 });
                 res.cookie('token', token, { httpOnly: true }).sendStatus(200);
-                console.log('done')
                 }
             });
             }

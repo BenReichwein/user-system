@@ -10,8 +10,14 @@ const PORT = process.env.PORT || 8080
 const app = express();
 // Initializes the database
 db();
-
-app.use(cors());
+const corsOptions = {
+  origin: [
+    "http://localhost:3000"
+  ],
+  credentials: true,
+  exposedHeaders: ["token"]
+}
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());

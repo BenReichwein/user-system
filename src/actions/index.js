@@ -1,4 +1,5 @@
 import history from '../history'
+import axios from 'axios'
 import {
     WELCOME_MESSAGE,
     LOAD_PROFILE,
@@ -9,46 +10,41 @@ import {
 //-> Messages
 //
 export const welcomeMessage = () => async (dispatch) => {
-  const response = await fetch('/home')
-  const message = await response.text();
+  const response = await axios.get('http://localhost:8080/home')
+  const message = await response.data;
 
   dispatch({ type: WELCOME_MESSAGE, payload: message});
 };
 //
 //-> Authentications
 //
-export const register = (formValues) => () => {
-  fetch(`/user/register`, {
-    method: 'POST',
-    body: JSON.stringify({
+export const register = (formValues) => async () => {
+  const response = await axios({
+    method: 'post',
+    url: 'http://localhost:8080/user/register',
+    data: {
       email: formValues.email,
       password: formValues.password
-    }),
+    },
     headers: {
       'Content-Type': 'application/json'
     }
   })
-  .then(res => {
-    if (res.status === 200) {
-      alert('Registered! Put that information in again to login!')
-    } else {
-      const error = new Error(res.error);
-      throw error;
-    }
-  })
-  .catch(err => {
-    console.error(err);
+  if (response.status === 200) {
+    alert('Registered! Put that information in again to login!')
+  } else {
     alert('Error registering, please try again');
-  });
+  }
 };
 
 export const login = (formValues) => async () => {
-  const response = await fetch(`/user/login`, {
-    method: 'POST',
-    body: JSON.stringify({
+  const response = await axios({
+    method: 'post',
+    url: 'http://localhost:8080/user/login',
+    data: {
       email: formValues.email,
       password: formValues.password
-    }),
+    },
     headers: {
       'Content-Type': 'application/json'
     }
@@ -61,7 +57,7 @@ export const login = (formValues) => async () => {
 };
 
 export const logout = () => async () => {
-  const response = await fetch('/user/logout')
+  const response = await axios.get('http://localhost:8080/user/logout')
   if (response.status === 200) {
     alert('Logged Out')
     history.push('/')
@@ -71,42 +67,45 @@ export const logout = () => async () => {
 };
 
 export const loadProfile = () => async (dispatch) => {
-  const response = await fetch('/user/profile')
-  const info = await response.json();
+  const response = await axios.get('http://localhost:8080/user/profile', {withCredentials: true})
+  const info = await response.data
 
   dispatch({ type: LOAD_PROFILE, payload: info});
 };
 
-export const updateProfile = (formValues) => () => {
-  fetch('/user/update', {
-    method: 'PATCH',
-    body: JSON.stringify({
+export const updateProfile = (formValues) => async () => {
+  const response = await axios({
+    method: 'patch',
+    url: 'http://localhost:8080/user/update',
+    data: {
       email: formValues.email,
       password: formValues.password
-    }),
+    },
     headers: {
-        'Content-Type': 'application/json'
-    }
-    })
-    .then(res => res.text())
-    .then(res => alert(res))
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true
+  })
+  alert(response.data)
 };
 //
 //-> Posts
 //
 export const createPost = (formValues) => async (dispatch) => {
-  const response = await fetch(`/posts`, {
-    method: 'POST',
-    body: JSON.stringify({
+  const response = await axios({
+    method: 'post',
+    url: 'http://localhost:8080/posts',
+    data: {
       title: formValues.title,
       description: formValues.description
-    }),
+    },
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    withCredentials: true
   })
   if (response.status === 200) {
-    const post = await response.json();
+    const post = await response.data;
 
     dispatch({ type: GET_POST, payload: post});
   } else {
@@ -115,31 +114,29 @@ export const createPost = (formValues) => async (dispatch) => {
 };
 
 export const getPost = () => async (dispatch) => {
-  const response = await fetch('/posts')
-  const post = await response.json();
+  const response = await axios.get('http://localhost:8080/posts')
+  const post = await response.data;
 
   dispatch({ type: GET_POST, payload: post});
 };
 
 export const deletePost = (id) => async (dispatch) => {
-  const response = await fetch(`/posts/${id}`, {
-    method: 'DELETE'
-  })
-  const post = await response.json();
+  const response = await axios.delete(`http://localhost:8080/posts/${id}`)
+  const post = await response.data;
 
   dispatch({ type: GET_POST, payload: post});
 };
 
 export const getUsersPosts = (uid) => async (dispatch) => {
-  const response = await fetch(`/userPosts/${uid}`)
-  const post = await response.json();
+  const response = await axios.get(`http://localhost:8080/userPosts/${uid}`)
+  const post = await response.data;
 
   dispatch({ type: GET_POST, payload: post});
 }
 
 export const getUid = () => async (dispatch) => {
-  const response = await fetch(`/user/getUid`)
-  const uid = await response.text();
+  const response = await axios.get(`http://localhost:8080/user/getUid`, {withCredentials: true})
+  const uid = await response.data;
 
   dispatch({ type: GET_UID, payload: uid});
 }
