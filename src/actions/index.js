@@ -4,7 +4,8 @@ import {
     WELCOME_MESSAGE,
     LOAD_PROFILE,
     GET_POST,
-    GET_UID
+    GET_UID,
+    LOAD_ADMIN
 } from './types';
 //
 //-> Messages
@@ -18,8 +19,8 @@ export const welcomeMessage = () => async (dispatch) => {
 //
 //-> Authentications
 //
-export const register = (formValues) => async () => {
-  const response = await axios({
+export const register = (formValues) => () => {
+  axios({
     method: 'post',
     url: 'http://localhost:8080/user/register',
     data: {
@@ -30,15 +31,20 @@ export const register = (formValues) => async () => {
       'Content-Type': 'application/json'
     }
   })
-  if (response.status === 200) {
-    alert('Registered! Put that information in again to login!')
-  } else {
-    alert('Error registering, please try again');
-  }
+  .then(res => {
+    if (res.status === 200) {
+      alert('Registered! Put that information in again to login!')
+      history.push('/login')
+    }
+  })
+  .catch(err => {
+    console.log(err)
+    alert('Error, Try again later')
+  })
 };
 
-export const login = (formValues) => async () => {
-  const response = await axios({
+export const login = (formValues) => () => {
+  axios({
     method: 'post',
     url: 'http://localhost:8080/user/login',
     data: {
@@ -49,11 +55,14 @@ export const login = (formValues) => async () => {
       'Content-Type': 'application/json'
     }
   })
-  if (response.status === 200) {
+  .then(res => {
+    if (res.status === 200)
     history.push('/')
-  } else {
-    alert('Error: Email or password is incorrect')
-  }
+  })
+  .catch(err => {
+    console.log(err)
+    alert('Email or password is incorrect')
+  })
 };
 
 export const logout = () => async () => {
@@ -140,3 +149,19 @@ export const getUid = () => async (dispatch) => {
 
   dispatch({ type: GET_UID, payload: uid});
 }
+//
+// -> Administrative Control
+//
+export const loadAdmin = () => async (dispatch) => {
+  const response = await axios.get('http://localhost:8080/admin/users')
+  const users = await response.data;
+
+  dispatch({ type: LOAD_ADMIN, payload: users});
+};
+
+export const deleteAdmin = (id) => async (dispatch) => {
+  const response = await axios.delete(`http://localhost:8080/admin/${id}`)
+  const users = await response.data;
+
+  dispatch({ type: LOAD_ADMIN, payload: users});
+};

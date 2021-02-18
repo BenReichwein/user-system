@@ -8,6 +8,8 @@ import Login from './pages/Login'
 import Profile from './pages/Profile'
 import UserProfile from './pages/UserProfile'
 import Post from './pages/Post'
+import Admin from './pages/Admin'
+import Register from './pages/Register'
 
 const App = () => {
   return (
@@ -19,8 +21,10 @@ const App = () => {
             <Route path="/" exact component={Home} />
             <Route path="/post" exact component={Post} />
             <Route path="/login" exact component={Login} />
+            <Route path="/register" exact component={Register} />
             <Route path="/profile" component={withAuth(Profile)} />
             <Route path="/userProfile/:id" exact component={UserProfile} />
+            <Route path="/admin" exact component={Admin} />
           </Switch>
         </div>
       </Router>

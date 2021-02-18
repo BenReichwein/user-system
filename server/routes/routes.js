@@ -1,5 +1,6 @@
 const user = require('./user');
-const post = require('./post')
+const post = require('./post');
+const admin = require('./admin')
 
 const appRouter = (app, fs) => {
     app.get('/', (req, res) => {
@@ -9,6 +10,7 @@ const appRouter = (app, fs) => {
     // Routes
     user(app);
     post(app);
+    admin(app);
 }
 
 module.exports = appRouter;

@@ -10769,6 +10769,11 @@
   "resolved" "https://registry.npmjs.org/sliced/-/sliced-1.0.1.tgz"
   "version" "1.0.1"
 
+"smtp@^0.1.4":
+  "integrity" "sha1-F3m7fmnA4Qd7cir/Q2dAjE29BFQ="
+  "resolved" "https://registry.npmjs.org/smtp/-/smtp-0.1.4.tgz"
+  "version" "0.1.4"
+
 "snapdragon-node@^2.0.1":
   "integrity" "sha512-O27l4xaMYt/RSQ5TR3vpWCAB5Kb/czIcqUFOM/C4fYcLnbZUc1PkjTAMjof2pBWaSTwOUd6qUHcFGVGj7aIwnw=="
   "resolved" "https://registry.npmjs.org/snapdragon-node/-/snapdragon-node-2.1.1.tgz"

@@ -10,12 +10,18 @@ const Header = () => {
       <Link to="/post" className="item">
         Post
       </Link>
+      <Link to="/admin" className="item">
+        Admin
+      </Link>
       <div className="right menu">
-        <Link to="/profile" className="item">
-          Profile
+        <Link to="/register" className="item">
+          Register
         </Link>
         <Link to="/login" className="item">
           Login
+        </Link>
+        <Link to="/profile" className="item">
+          Profile
         </Link>
       </div>
     </div>
