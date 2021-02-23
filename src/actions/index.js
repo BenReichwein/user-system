@@ -1,5 +1,5 @@
 import history from '../history'
-import axios from 'axios'
+import api from './api'
 import {
     WELCOME_MESSAGE,
     LOAD_PROFILE,
@@ -11,7 +11,7 @@ import {
 //-> Messages
 //
 export const welcomeMessage = () => async (dispatch) => {
-  const response = await axios.get('http://localhost:8080/home')
+  const response = await api.get('home')
   const message = await response.data;
 
   dispatch({ type: WELCOME_MESSAGE, payload: message});
@@ -20,9 +20,9 @@ export const welcomeMessage = () => async (dispatch) => {
 //-> Authentications
 //
 export const register = (formValues) => () => {
-  axios({
+  api({
     method: 'post',
-    url: 'http://localhost:8080/user/register',
+    url: 'user/register',
     data: {
       email: formValues.email,
       password: formValues.password
@@ -44,9 +44,9 @@ export const register = (formValues) => () => {
 };
 
 export const login = (formValues) => () => {
-  axios({
+  api({
     method: 'post',
-    url: 'http://localhost:8080/user/login',
+    url: 'user/login',
     data: {
       email: formValues.email,
       password: formValues.password
@@ -66,7 +66,7 @@ export const login = (formValues) => () => {
 };
 
 export const logout = () => async () => {
-  const response = await axios.get('http://localhost:8080/user/logout')
+  const response = await api.get('user/logout')
   if (response.status === 200) {
     alert('Logged Out')
     history.push('/')
@@ -76,24 +76,23 @@ export const logout = () => async () => {
 };
 
 export const loadProfile = () => async (dispatch) => {
-  const response = await axios.get('http://localhost:8080/user/profile', {withCredentials: true})
+  const response = await api.get('user/profile')
   const info = await response.data
 
   dispatch({ type: LOAD_PROFILE, payload: info});
 };
 
 export const updateProfile = (formValues) => async () => {
-  const response = await axios({
+  const response = await api({
     method: 'patch',
-    url: 'http://localhost:8080/user/update',
+    url: 'user/update',
     data: {
       email: formValues.email,
       password: formValues.password
     },
     headers: {
       'Content-Type': 'application/json'
-    },
-    withCredentials: true
+    }
   })
   alert(response.data)
 };
@@ -101,17 +100,16 @@ export const updateProfile = (formValues) => async () => {
 //-> Posts
 //
 export const createPost = (formValues) => async (dispatch) => {
-  const response = await axios({
+  const response = await api({
     method: 'post',
-    url: 'http://localhost:8080/posts',
+    url: 'posts',
     data: {
       title: formValues.title,
       description: formValues.description
     },
     headers: {
       'Content-Type': 'application/json'
-    },
-    withCredentials: true
+    }
   })
   if (response.status === 200) {
     const post = await response.data;
@@ -123,28 +121,28 @@ export const createPost = (formValues) => async (dispatch) => {
 };
 
 export const getPost = () => async (dispatch) => {
-  const response = await axios.get('http://localhost:8080/posts')
+  const response = await api.get('posts')
   const post = await response.data;
 
   dispatch({ type: GET_POST, payload: post});
 };
 
 export const deletePost = (id) => async (dispatch) => {
-  const response = await axios.delete(`http://localhost:8080/posts/${id}`)
+  const response = await api.delete(`posts/${id}`)
   const post = await response.data;
 
   dispatch({ type: GET_POST, payload: post});
 };
 
 export const getUsersPosts = (uid) => async (dispatch) => {
-  const response = await axios.get(`http://localhost:8080/userPosts/${uid}`)
+  const response = await api.get(`userPosts/${uid}`)
   const post = await response.data;
 
   dispatch({ type: GET_POST, payload: post});
 }
 
 export const getUid = () => async (dispatch) => {
-  const response = await axios.get(`http://localhost:8080/user/getUid`, {withCredentials: true})
+  const response = await api.get(`user/getUid`)
   const uid = await response.data;
 
   dispatch({ type: GET_UID, payload: uid});
@@ -153,14 +151,14 @@ export const getUid = () => async (dispatch) => {
 // -> Administrative Control
 //
 export const loadAdmin = () => async (dispatch) => {
-  const response = await axios.get('http://localhost:8080/admin/users')
+  const response = await api.get('admin/users')
   const users = await response.data;
 
   dispatch({ type: LOAD_ADMIN, payload: users});
 };
 
 export const deleteAdmin = (id) => async (dispatch) => {
-  const response = await axios.delete(`http://localhost:8080/admin/${id}`)
+  const response = await api.delete(`admin/${id}`)
   const users = await response.data;
 
   dispatch({ type: LOAD_ADMIN, payload: users});
