@@ -7,7 +7,6 @@ class Admin extends Component {
         this.props.loadAdmin();
     }
     render() {
-        console.log(this.props.admin)
         if (this.props.admin.length > 0) {
             return (
                 <div>
