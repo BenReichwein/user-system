@@ -22,26 +22,31 @@ class Post extends React.Component {
                         <ul>
                             { this.props.posts.map(post =>
                             <li key={post._id}>
-                                <label>
+                                <p>
                                     {post.title}<br/>
                                     {post.description}<br/>
                                     Comments: {
                                         post.comments.length >= 1 ?
                                         post.comments.map(comment =>
-                                            <label>
+                                            <p>
                                                 <br/>
                                                 {comment.comment}
                                                 <button onClick={()=> this.props.history.push(`/userProfile/${comment.commentUid}`)}>User</button>
-                                                <button onClick={()=> this.props.deleteComment(comment.comment, comment.postId)} style={comment.commentUid === this.props.auth ? {} : {display: 'none'}}>Delete</button>
-                                            </label>
+                                                <button 
+                                                onClick={()=> this.props.deleteComment(comment.comment, comment.commentUid, comment.postId)} 
+                                                style={
+                                                    comment.commentUid === this.props.auth ? {} : {display: 'none'} &&
+                                                    comment.postUid === this.props.auth ? {} : {display: 'none'}}>Delete</button>
+                                            </p>
                                         )
                                         : <label>No Comments</label>
                                     }
-                                </label>
+                                </p>
                                 <br/>
-                                <button onClick={()=> this.props.deletePost(post._id)} style={post.postUid === this.props.auth ? {} : {display: 'none'}}>Delete</button>
+                                <button onClick={()=> this.props.deletePost(post._id)} style={
+                                    post.postUid === this.props.auth ? {} : {display: 'none'}}>Delete</button>
                                 <button onClick={()=> this.props.history.push(`/userProfile/${post.postUid}`)}>User</button>
-                                <button onClick={()=> this.props.createComment('Test Comment', post._id)}>Add Test Comment</button>
+                                <button onClick={()=> this.props.createComment('Test Comment', post.postUid, post._id)}>Add Test Comment</button>
                             </li>
                             )}
                         </ul>

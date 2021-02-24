@@ -10,7 +10,7 @@ const user = (app) => {
     app.get('/home', function(req, res) {
         res.send('Welcome!');
     });
-      
+    // Get user profile
     app.get('/user/profile', withAuth, async function(req, res) {
         const token = 
             req.body.token ||
@@ -27,7 +27,7 @@ const user = (app) => {
             });
         })
     });
-      
+    // Register User
     app.post('/user/register', function(req, res) {
         const { email, password } = req.body;
         const user = new User({ email, password });
@@ -40,7 +40,7 @@ const user = (app) => {
             }
         });
     });
-      
+    // User Login
     app.post('/user/login', function(req, res) {
         const { email, password } = req.body;
         User.findOne({ email }, function(err, user) {
@@ -82,7 +82,7 @@ const user = (app) => {
             }
         });
     });
-
+    // Update User
     app.patch('/user/update', withAuth, async (req, res) => {
         const { email, password } = req.body;
         const token = 
@@ -102,7 +102,7 @@ const user = (app) => {
 
         return res.status(200).send("Updated!");
     })
-
+    // Get User Id
     app.get('/user/getUid', async (req, res) => {
         const token = 
             req.body.token ||
@@ -117,11 +117,11 @@ const user = (app) => {
             return res.status(401).send(null)
         }
     })
-
+    // Logs out user
     app.get('/user/logout', function(req, res) {
         res.cookie('token', "", { httpOnly: true }).sendStatus(200);
     });
-      
+    // Check token with middleware
     app.get('/checkToken', withAuth, function(req, res) {
         res.sendStatus(200);
     });

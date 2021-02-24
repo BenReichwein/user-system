@@ -68,7 +68,7 @@ const posts = (app) => {
         }
     })
     // Post Comment
-    app.post('/posts/postComment/:postId', withAuth, async (req, res) => {
+    app.post('/posts/comment/:postId', withAuth, async (req, res) => {
         const token = 
             req.body.token ||
             req.query.token ||
@@ -82,6 +82,7 @@ const posts = (app) => {
             { $push: {
                 comments: {
                     commentUid: decoded.id,
+                    postUid: req.body.postUid,
                     postId: req.body.postId,
                     comment: req.body.comment
                 }
@@ -95,11 +96,12 @@ const posts = (app) => {
         }
     })
     // Delete Comment
-    app.post('/posts/deleteComment/:postId', withAuth, async (req, res) => {
+    app.delete('/posts/comment/:postId', withAuth, async (req, res) => {
         Post.updateOne(
             { _id : req.params.postId},
             { $pull: {
                 comments: {
+                    commentUid: req.body.commentUid,
                     postId: req.body.postId,
                     comment: req.body.comment
                 }

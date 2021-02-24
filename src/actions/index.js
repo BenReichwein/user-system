@@ -20,16 +20,9 @@ export const welcomeMessage = () => async (dispatch) => {
 //-> Authentications
 //
 export const register = (formValues) => () => {
-  api({
-    method: 'post',
-    url: 'user/register',
-    data: {
-      email: formValues.email,
-      password: formValues.password
-    },
-    headers: {
-      'Content-Type': 'application/json'
-    }
+  api.post('user/register', {
+    email: formValues.email,
+    password: formValues.password
   })
   .then(res => {
     if (res.status === 200) {
@@ -44,16 +37,9 @@ export const register = (formValues) => () => {
 };
 
 export const login = (formValues) => () => {
-  api({
-    method: 'post',
-    url: 'user/login',
-    data: {
-      email: formValues.email,
-      password: formValues.password
-    },
-    headers: {
-      'Content-Type': 'application/json'
-    }
+  api.post('user/login', {
+    email: formValues.email,
+    password: formValues.password
   })
   .then(res => {
     if (res.status === 200)
@@ -83,33 +69,23 @@ export const loadProfile = () => async (dispatch) => {
 };
 
 export const updateProfile = (formValues) => async () => {
-  const response = await api({
-    method: 'patch',
-    url: 'user/update',
-    data: {
-      email: formValues.email,
-      password: formValues.password
-    },
-    headers: {
-      'Content-Type': 'application/json'
-    }
+  const response = await api.post('user/register', {
+    email: formValues.email,
+    password: formValues.password
   })
-  alert(response.data)
+  if (response.status === 200) {
+    alert(response.data)
+  } else {
+    alert(`Error: Could not update profile`)
+  }
 };
 //
 //-> Posts
 //
 export const createPost = (formValues) => async (dispatch) => {
-  const response = await api({
-    method: 'post',
-    url: 'posts',
-    data: {
-      title: formValues.title,
-      description: formValues.description
-    },
-    headers: {
-      'Content-Type': 'application/json'
-    }
+  const response = await api.post('posts', {
+    title: formValues.title,
+    description: formValues.description
   })
   if (response.status === 200) {
     const post = await response.data;
@@ -134,28 +110,23 @@ export const deletePost = (id) => async (dispatch) => {
   dispatch({ type: GET_POST, payload: post});
 };
 
-export const createComment = (comment, id) => async (dispatch) => {
-  const response = await api({
-    method: 'post',
-    url: `posts/postComment/${id}`,
-    data: {
-      postId: id,
-      comment
-    },
-    headers: {
-      'Content-Type': 'application/json'
-    }
+export const createComment = (comment, postUid, id) => async (dispatch) => {
+  const response = await api.post(`posts/comment/${id}`, {
+    postUid,
+    postId: id,
+    comment
   })
   const post = await response.data;
 
   dispatch({ type: GET_POST, payload: post});
 }
 
-export const deleteComment = (comment, id) => async (dispatch) => {
+export const deleteComment = (comment, commentUid, id) => async (dispatch) => {
   const response = await api({
-    method: 'post',
-    url: `posts/deleteComment/${id}`,
+    method: 'delete',
+    url: `posts/comment/${id}`,
     data: {
+      commentUid,
       postId: id,
       comment,
     },
