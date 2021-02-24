@@ -9,7 +9,10 @@ const PostSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    user: {
+    comments: {
+        type: Array,
+    },
+    postUid: {
         type: String,
         required: true
     },

@@ -25,7 +25,8 @@ const posts = (app) => {
         const post = new Post({
             title: req.body.title,
             description: req.body.description,
-            user: decoded.id,
+            comments: [],
+            postUid: decoded.id,
         });
         try {
             await post.save();
@@ -66,10 +67,55 @@ const posts = (app) => {
             res.send(`Error ${err}`)
         }
     })
+    // Post Comment
+    app.post('/posts/postComment/:postId', withAuth, async (req, res) => {
+        const token = 
+            req.body.token ||
+            req.query.token ||
+            req.headers['x-access-token'] ||
+            req.cookies.token;  
+        
+        const decoded = jwt.verify(token, appSecret);
+
+        Post.updateOne(
+            { _id : req.params.postId},
+            { $push: {
+                comments: {
+                    commentUid: decoded.id,
+                    postId: req.body.postId,
+                    comment: req.body.comment
+                }
+            }
+        }).exec();
+        try {
+            const posts = await Post.find();
+            res.json(posts)
+        } catch (err) {
+            res.send(`Error ${err}`)
+        }
+    })
+    // Delete Comment
+    app.post('/posts/deleteComment/:postId', withAuth, async (req, res) => {
+        Post.updateOne(
+            { _id : req.params.postId},
+            { $pull: {
+                comments: {
+                    postId: req.body.postId,
+                    comment: req.body.comment
+                }
+            }
+        }).exec();
+        try {
+            const posts = await Post.find();
+            res.json(posts)
+        } catch (err) {
+            res.send(`Error ${err}`)
+        }
+    })
     // Get Users Posts
     app.get('/userPosts/:userId', async (req, res) => {
         try {
-            const post = await Post.find({ user: req.params.userId })
+            const post = await Post.find({ postUid: req.params.userId })
             res.status(200).json(post)
         } catch (err) {
             res.send(`Error ${err}`)

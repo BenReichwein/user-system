@@ -134,6 +134,40 @@ export const deletePost = (id) => async (dispatch) => {
   dispatch({ type: GET_POST, payload: post});
 };
 
+export const createComment = (comment, id) => async (dispatch) => {
+  const response = await api({
+    method: 'post',
+    url: `posts/postComment/${id}`,
+    data: {
+      postId: id,
+      comment
+    },
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const post = await response.data;
+
+  dispatch({ type: GET_POST, payload: post});
+}
+
+export const deleteComment = (comment, id) => async (dispatch) => {
+  const response = await api({
+    method: 'post',
+    url: `posts/deleteComment/${id}`,
+    data: {
+      postId: id,
+      comment,
+    },
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const post = await response.data;
+
+  dispatch({ type: GET_POST, payload: post});
+};
+
 export const getUsersPosts = (uid) => async (dispatch) => {
   const response = await api.get(`userPosts/${uid}`)
   const post = await response.data;
