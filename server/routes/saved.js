@@ -15,14 +15,18 @@ const saved = (app) => {
         
         const decoded = jwt.verify(token, appSecret);
 
-        await User.updateOne(
-            { _id : decoded.id},
-            { $push: {
-                saved: req.body.postId
-            }
-        }).exec();
-
-        res.status(200).send('Added to [SAVED]')
+        try {
+            await User.updateOne(
+                { _id : decoded.id},
+                { $push: {
+                    saved: req.body.postId
+                }
+            }).exec();
+    
+            res.status(200).send('Added to [SAVED]')
+        } catch (error) {
+            res.status(500).send('Internal Error, Please try again')
+        }
     })
     // Get Saved Posts from a user
     app.get('/saved', withAuth, async (req, res) => {
@@ -34,15 +38,19 @@ const saved = (app) => {
         
         const decoded = jwt.verify(token, appSecret);
 
-        User.findById(decoded.id, function(err, user) {
-            Post.find({_id:{$in:user.saved}})
-            .sort({createdAt: 'desc'})
-            .then(
-                (resp)=> {
-                    res.status(200).json(resp)
-                }
-            )
-        })
+        try {
+            User.findById(decoded.id, function(err, user) {
+                Post.find({_id:{$in:user.saved}})
+                .sort({createdAt: 'desc'})
+                .then(
+                    (resp)=> {
+                        res.status(200).json(resp)
+                    }
+                )
+            })
+        } catch (error) {
+            res.status(500).send('Internal Error, Please try again')
+        }
     })
     // Delete Saved
     app.delete('/saved/:postId', withAuth, async (req, res) => {
@@ -54,22 +62,26 @@ const saved = (app) => {
         
         const decoded = jwt.verify(token, appSecret);
 
-        await User.updateOne(
-            { _id : decoded.id},
-            { $pull: {
-                saved: req.params.postId
-            }
-        }).exec();
-
-        await User.findById(decoded.id, function(err, user) {
-            Post.find({_id:{$in: user.saved}})
-            .sort({createdAt: 'desc'})
-            .then(
-                (resp)=> {
-                    res.status(200).json(resp)
+        try {
+            await User.updateOne(
+                { _id : decoded.id},
+                { $pull: {
+                    saved: req.params.postId
                 }
-            )
-        })
+            }).exec();
+    
+            await User.findById(decoded.id, function(err, user) {
+                Post.find({_id:{$in: user.saved}})
+                .sort({createdAt: 'desc'})
+                .then(
+                    (resp)=> {
+                        res.status(200).json(resp)
+                    }
+                )
+            })
+        } catch (error) {
+            res.status(500).send('Internal Error, Please try again')
+        }
     })
 };
 

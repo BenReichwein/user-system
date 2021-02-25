@@ -13,9 +13,8 @@ import {
 // gets welcome message from api to check if api is running
 export const welcomeMessage = () => async (dispatch) => {
   const response = await api.get('home')
-  const message = await response.data;
 
-  dispatch({ type: WELCOME_MESSAGE, payload: message});
+  dispatch({ type: WELCOME_MESSAGE, payload: response.data});
 };
 //
 //-> Authentications
@@ -52,20 +51,22 @@ export const login = (formValues) => () => {
 };
 // Logging out of account
 export const logout = () => async () => {
-  const response = await api.get('user/logout')
-  if (response.status === 200) {
-    alert('Logged Out')
-    history.push('/')
-  } else {
-    alert(`Error: ${response.error}`)
-  }
+  await api.get('user/logout')
+  .then(res => {
+    if (res.status === 200) {
+      alert('Logged out')
+      history.push('/')
+    }
+  })
+  .catch(err => {
+    alert(err.response.data)
+  })
 };
 // Loading profile information
 export const loadProfile = () => async (dispatch) => {
   const response = await api.get('user/profile')
-  const info = await response.data
 
-  dispatch({ type: LOAD_PROFILE, payload: info});
+  dispatch({ type: LOAD_PROFILE, payload: response.data});
 };
 // Update profile information
 export const updateProfile = (formValues) => async () => {
@@ -83,40 +84,40 @@ export const updateProfile = (formValues) => async () => {
 // Get user id from authentication
 export const getUid = () => async (dispatch) => {
   const response = await api.get(`user/getUid`)
-  const uid = await response.data;
 
-  dispatch({ type: GET_UID, payload: uid});
+  dispatch({ type: GET_UID, payload: response.data});
 }
 //
 //-> Posts
 //
 // Creating a post
 export const createPost = (formValues) => async (dispatch) => {
-  const response = await api.post('posts', {
+  await api.post('posts', {
     title: formValues.title,
     description: formValues.description
   })
-  if (response.status === 200) {
-    const post = await response.data;
-
-    dispatch({ type: GET_POST, payload: post});
-  } else {
-    alert('Error: you need to be logged in to post')
-  }
+  .then(res => {
+    dispatch({ type: GET_POST, payload: res.data});
+  })
+  .catch(err=> {
+    alert(err.response.data)
+  })
 };
 // Get all the posts
 export const getPost = () => async (dispatch) => {
   const response = await api.get('posts')
-  const post = await response.data;
 
-  dispatch({ type: GET_POST, payload: post});
+  dispatch({ type: GET_POST, payload: response.data});
 };
 // Delete a single post
 export const deletePost = (id) => async (dispatch) => {
-  const response = await api.delete(`posts/${id}`)
-  const post = await response.data;
-
-  dispatch({ type: GET_POST, payload: post});
+  await api.delete(`posts/${id}`)
+  .then(res => {
+    dispatch({ type: GET_POST, payload: res.data});
+  })
+  .catch(err => {
+    alert(err.response.data)
+  })
 };
 // Comment on a post
 export const createComment = (comment, postUid, id) => async (dispatch) => {
@@ -126,17 +127,15 @@ export const createComment = (comment, postUid, id) => async (dispatch) => {
     comment
   })
   .then(async (res) => {
-    const post = await res.data;
-
-    dispatch({ type: GET_POST, payload: post});
+    dispatch({ type: GET_POST, payload: res.data});
   })
   .catch(err => {
-    alert('You are not logged in')
+    alert(err.response.data)
   })
 }
 // Delete a comment (could be from owner of post or commenter)
 export const deleteComment = (comment, commentUid, id) => async (dispatch) => {
-  const response = await api({
+  await api({
     method: 'delete',
     url: `posts/comment/${id}`,
     data: {
@@ -148,9 +147,12 @@ export const deleteComment = (comment, commentUid, id) => async (dispatch) => {
       'Content-Type': 'application/json'
     }
   })
-  const post = await response.data;
-
-  dispatch({ type: GET_POST, payload: post});
+  .then(res => {
+    dispatch({ type: GET_POST, payload: res.data});
+  })
+  .catch(err=> {
+    alert(err.response.data)
+  })
 };
 // Add post to users saved collection
 export const addSaved = (id) => async () => {
@@ -160,30 +162,31 @@ export const addSaved = (id) => async () => {
   .then(res => {
     alert(res.data)
   })
-  .catch(err => {
-    alert('You are not logged in')
+  .catch(err=> {
+    alert(err.response.data)
   })
 }
 // Get all saved post from user
 export const getSaved = () => async (dispatch) => {
   const response = await api.get('saved')
-  const post = await response.data;
 
-  dispatch({ type: GET_POST, payload: post});
+  dispatch({ type: GET_POST, payload: response.data});
 };
 // Remove a saved post from users collection
 export const deleteSaved = (id) => async (dispatch) => {
-  const response = await api.delete(`saved/${id}`)
-  const post = await response.data;
-
-  dispatch({ type: GET_POST, payload: post});
+  await api.delete(`saved/${id}`)
+  .then(res => {
+    dispatch({ type: GET_POST, payload: res.data});
+  })
+  .catch(err => {
+    alert(err.response.data)
+  })
 }
 // Get all users posts that they've posted
 export const getUsersPosts = (uid) => async (dispatch) => {
   const response = await api.get(`userPosts/${uid}`)
-  const post = await response.data;
 
-  dispatch({ type: GET_POST, payload: post});
+  dispatch({ type: GET_POST, payload: response.data});
 }
 //
 // -> Administrative Control
@@ -191,14 +194,12 @@ export const getUsersPosts = (uid) => async (dispatch) => {
 // Get all the accounts and their information
 export const loadAdmin = () => async (dispatch) => {
   const response = await api.get('admin/users')
-  const users = await response.data;
 
-  dispatch({ type: LOAD_ADMIN, payload: users});
+  dispatch({ type: LOAD_ADMIN, payload: response.data});
 };
 // Delete single account
 export const deleteAdmin = (id) => async (dispatch) => {
   const response = await api.delete(`admin/${id}`)
-  const users = await response.data;
 
-  dispatch({ type: LOAD_ADMIN, payload: users});
+  dispatch({ type: LOAD_ADMIN, payload: response.data});
 };

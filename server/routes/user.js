@@ -113,7 +113,11 @@ const user = (app) => {
     })
     // Logs out user
     app.get('/user/logout', function(req, res) {
-        res.cookie('token', "", { httpOnly: true }).sendStatus(200);
+        try {
+            res.cookie('token', "", { httpOnly: true }).sendStatus(200);
+        } catch (error) {
+            res.status(500).send('Internal Error, Please try again')
+        }
     });
     // Check token with middleware
     app.get('/checkToken', withAuth, function(req, res) {

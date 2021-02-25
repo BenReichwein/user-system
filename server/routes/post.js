@@ -10,7 +10,7 @@ const posts = (app) => {
             .sort({createdAt: 'desc'});
             res.json(posts)
         } catch (err) {
-            res.send(`Error ${err}`)
+            res.status(500).send('Internal Error, Please try again')
         }
     }
     app.get('/posts', async (req, res) => {
@@ -22,8 +22,8 @@ const posts = (app) => {
             req.body.token ||
             req.query.token ||
             req.headers['x-access-token'] ||
-            req.cookies.token;  
-        
+            req.cookies.token;
+
         const decoded = jwt.verify(token, appSecret);
 
         const post = new Post({
@@ -32,9 +32,13 @@ const posts = (app) => {
             comments: [],
             postUid: decoded.id,
         });
-        await post.save();
 
-        findPosts(req, res);
+        try {
+            await post.save();
+            findPosts(req, res);
+        } catch (error) {
+            res.status(500).send('Internal Error, Please try again')
+        }
     });
     // Specific post
     app.get('/posts/:postId', async (req, res) => {
@@ -43,13 +47,17 @@ const posts = (app) => {
             .sort({createdAt: 'desc'})
             res.status(200).json(post)
         } catch (err) {
-            res.send(`Error ${err}`)
+            res.status(500).send('Internal Error, Please try again')
         }
     })
     // Delete post
     app.delete('/posts/:postId', async (req, res) => {
-        await Post.deleteOne({_id: req.params.postId});
-        findPosts(req, res);
+        try {
+            await Post.deleteOne({_id: req.params.postId});
+            findPosts(req, res);
+        } catch (error) {
+            res.status(500).send('Internal Error, Please try again')
+        }
     })
     // Update post
     app.patch('/posts/:postId', async (req, res) => {
@@ -60,7 +68,7 @@ const posts = (app) => {
             );
             res.json(updatedPost);
         } catch (err) {
-            res.send(`Error ${err}`)
+            res.status(500).send('Internal Error, Please try again')
         }
     })
     // Post Comment
@@ -73,34 +81,40 @@ const posts = (app) => {
         
         const decoded = jwt.verify(token, appSecret);
 
-        Post.updateOne(
-            { _id : req.params.postId},
-            { $push: {
-                comments: {
-                    commentUid: decoded.id,
-                    postUid: req.body.postUid,
-                    postId: req.body.postId,
-                    comment: req.body.comment
+        try {
+            Post.updateOne(
+                { _id : req.params.postId},
+                { $push: {
+                    comments: {
+                        commentUid: decoded.id,
+                        postUid: req.body.postUid,
+                        postId: req.body.postId,
+                        comment: req.body.comment
+                    }
                 }
-            }
-        }).exec();
-        
-        findPosts(req, res);
+            }).exec();
+            findPosts(req, res);
+        } catch (error) {
+            res.status(500).send('Internal Error, Please try again')
+        }
     })
     // Delete Comment
     app.delete('/posts/comment/:postId', withAuth, async (req, res) => {
-        Post.updateOne(
-            { _id : req.params.postId},
-            { $pull: {
-                comments: {
-                    commentUid: req.body.commentUid,
-                    postId: req.body.postId,
-                    comment: req.body.comment
+        try {
+            Post.updateOne(
+                { _id : req.params.postId},
+                { $pull: {
+                    comments: {
+                        commentUid: req.body.commentUid,
+                        postId: req.body.postId,
+                        comment: req.body.comment
+                    }
                 }
-            }
-        }).exec();
-
-        findPosts(req, res);
+            }).exec();
+            findPosts(req, res);
+        } catch (error) {
+            res.status(500).send('Internal Error, Please try again')
+        }
     })
     // Get Users Posts
     app.get('/userPosts/:userId', async (req, res) => {
