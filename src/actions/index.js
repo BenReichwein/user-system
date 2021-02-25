@@ -28,13 +28,12 @@ export const register = (formValues) => () => {
   })
   .then(res => {
     if (res.status === 200) {
-      alert('Registered! Put that information in again to login!')
+      alert(res.data)
       history.push('/login')
     }
   })
   .catch(err => {
-    console.log(err)
-    alert('Error, Try again later')
+    alert(err.response.data)
   })
 };
 // logging into existing account
@@ -48,8 +47,7 @@ export const login = (formValues) => () => {
     history.push('/')
   })
   .catch(err => {
-    console.log(err)
-    alert('Email or password is incorrect')
+    alert(err.response.data)
   })
 };
 // Logging out of account
@@ -71,16 +69,24 @@ export const loadProfile = () => async (dispatch) => {
 };
 // Update profile information
 export const updateProfile = (formValues) => async () => {
-  const response = await api.post('user/register', {
+  await api.patch('user/update', {
     email: formValues.email,
     password: formValues.password
   })
-  if (response.status === 200) {
-    alert(response.data)
-  } else {
-    alert(`Error: Could not update profile`)
-  }
+  .then(res => {
+    alert(res.data)
+  })
+  .catch(err => {
+    alert(err.response.data)
+  })
 };
+// Get user id from authentication
+export const getUid = () => async (dispatch) => {
+  const response = await api.get(`user/getUid`)
+  const uid = await response.data;
+
+  dispatch({ type: GET_UID, payload: uid});
+}
 //
 //-> Posts
 //
@@ -114,14 +120,19 @@ export const deletePost = (id) => async (dispatch) => {
 };
 // Comment on a post
 export const createComment = (comment, postUid, id) => async (dispatch) => {
-  const response = await api.post(`posts/comment/${id}`, {
+  await api.post(`posts/comment/${id}`, {
     postUid,
     postId: id,
     comment
   })
-  const post = await response.data;
+  .then(async (res) => {
+    const post = await res.data;
 
-  dispatch({ type: GET_POST, payload: post});
+    dispatch({ type: GET_POST, payload: post});
+  })
+  .catch(err => {
+    alert('You are not logged in')
+  })
 }
 // Delete a comment (could be from owner of post or commenter)
 export const deleteComment = (comment, commentUid, id) => async (dispatch) => {
@@ -143,10 +154,15 @@ export const deleteComment = (comment, commentUid, id) => async (dispatch) => {
 };
 // Add post to users saved collection
 export const addSaved = (id) => async () => {
-  const response = await api.post(`saved`, {
+  await api.post(`saved`, {
     postId: id
   })
-  alert(response.data)
+  .then(res => {
+    alert(res.data)
+  })
+  .catch(err => {
+    alert('You are not logged in')
+  })
 }
 // Get all saved post from user
 export const getSaved = () => async (dispatch) => {
@@ -168,13 +184,6 @@ export const getUsersPosts = (uid) => async (dispatch) => {
   const post = await response.data;
 
   dispatch({ type: GET_POST, payload: post});
-}
-// Get user id from authentication
-export const getUid = () => async (dispatch) => {
-  const response = await api.get(`user/getUid`)
-  const uid = await response.data;
-
-  dispatch({ type: GET_UID, payload: uid});
 }
 //
 // -> Administrative Control

@@ -33,10 +33,9 @@ const user = (app) => {
         const user = new User({ email, password, saved: [] });
         user.save(function(err) {
             if (err) {
-            console.log(err);
-            res.status(500).send("Error registering new user please try again.");
+            res.status(500).send("A user already exists with this email");
             } else {
-            res.status(200).send("Registered!");
+            res.status(200).send("Registered! Put that information in again to login!");
             }
         });
     });
@@ -47,26 +46,18 @@ const user = (app) => {
             if (err) {
             console.error(err);
             res.status(500)
-                .json({
-                error: 'Internal error please try again'
-            });
+                .send('Internal error please try again');
             } else if (!user) {
             res.status(401)
-                .json({
-                error: 'Incorrect email or password'
-            });
+                .send('Incorrect email or password');
             } else {
             user.isCorrectPassword(password, function(err, same) {
                 if (err) {
                 res.status(500)
-                    .json({
-                    error: 'Internal error please try again'
-                });
+                    .send('Internal error please try again');
                 } else if (!same) {
                 res.status(401)
-                    .json({
-                    error: 'Incorrect email or password'
-                });
+                    .send('Incorrect email or password');
                 } else {
                 // Issue token
                 const payload = {
@@ -99,8 +90,11 @@ const user = (app) => {
         if (password) updateQuery.password = await bcrypt.hash(password, 10);
 
         await User.findByIdAndUpdate(decoded.id, updateQuery);
-
-        return res.status(200).send("Updated!");
+        try {
+            return res.status(200).send("Updated!");
+        } catch (error) {
+            return res.status(500).send('Internal Error, Please try again')
+        }
     })
     // Get User Id
     app.get('/user/getUid', async (req, res) => {
@@ -112,9 +106,9 @@ const user = (app) => {
 
         if (token) {
             const decoded = jwt.verify(token, appSecret);
-            return res.status(200).send(decoded.id);
+            return res.send(decoded.id);
         } else {
-            return res.status(401).send(null)
+            return res.send(null)
         }
     })
     // Logs out user

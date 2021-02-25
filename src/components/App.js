@@ -25,7 +25,7 @@ const App = () => {
             <Route path="/register" exact component={Register} />
             <Route path="/profile" component={withAuth(Profile)} />
             <Route path="/userProfile/:id" exact component={UserProfile} />
-            <Route path="/admin" exact component={Admin} />
+            <Route path="/admin" exact component={withAuth(Admin)} />
             <Route path="/saved" exact component={withAuth(Saved)} />
           </Switch>
         </div>
