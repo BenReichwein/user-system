@@ -6,7 +6,7 @@ const cors = require('cors')
 const fs = require('fs')
 const db = require('./config/db')
 const PORT = process.env.PORT || 8080
-
+// All the setup for our api
 const app = express();
 // Initializes the database
 db();

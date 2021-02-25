@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+// Defining Post Model
 const PostSchema = mongoose.Schema({
     title: {
         type: String,

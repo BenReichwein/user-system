@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { database } = require('./keys');
-
+// This is where we initialize our mongo database
 const db = async () => {
     try {
         await mongoose.connect(

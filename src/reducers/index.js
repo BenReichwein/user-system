@@ -6,6 +6,8 @@ import postReducer from './postReducer'
 import authReducer from './authReducer'
 import adminReducer from './adminReducer'
 
+// In redux this is where we combine the states
+
 export default combineReducers({
     message: messageReducer,
     profile: profileReducer,
