@@ -139,6 +139,27 @@ export const deleteComment = (comment, commentUid, id) => async (dispatch) => {
   dispatch({ type: GET_POST, payload: post});
 };
 
+export const addSaved = (id) => async () => {
+  const response = await api.post(`saved`, {
+    postId: id
+  })
+  alert(response.data)
+}
+
+export const getSaved = () => async (dispatch) => {
+  const response = await api.get('saved')
+  const post = await response.data;
+
+  dispatch({ type: GET_POST, payload: post});
+};
+
+export const deleteSaved = (id) => async (dispatch) => {
+  const response = await api.delete(`saved/${id}`)
+  const post = await response.data;
+
+  dispatch({ type: GET_POST, payload: post});
+}
+
 export const getUsersPosts = (uid) => async (dispatch) => {
   const response = await api.get(`userPosts/${uid}`)
   const post = await response.data;

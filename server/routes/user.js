@@ -30,7 +30,7 @@ const user = (app) => {
     // Register User
     app.post('/user/register', function(req, res) {
         const { email, password } = req.body;
-        const user = new User({ email, password });
+        const user = new User({ email, password, saved: [] });
         user.save(function(err) {
             if (err) {
             console.log(err);

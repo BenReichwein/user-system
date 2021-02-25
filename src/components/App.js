@@ -10,6 +10,7 @@ import UserProfile from './pages/UserProfile'
 import Post from './pages/Post'
 import Admin from './pages/Admin'
 import Register from './pages/Register'
+import Saved from './pages/Saved'
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
             <Route path="/profile" component={withAuth(Profile)} />
             <Route path="/userProfile/:id" exact component={UserProfile} />
             <Route path="/admin" exact component={Admin} />
+            <Route path="/saved" exact component={withAuth(Saved)} />
           </Switch>
         </div>
       </Router>

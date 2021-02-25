@@ -1,5 +1,6 @@
 const user = require('./user');
 const post = require('./post');
+const saved = require('./saved')
 const admin = require('./admin')
 
 const appRouter = (app, fs) => {
@@ -10,6 +11,7 @@ const appRouter = (app, fs) => {
     // Routes
     user(app);
     post(app);
+    saved(app);
     admin(app);
 }
 

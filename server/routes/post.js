@@ -4,13 +4,17 @@ const withAuth = require('./middleware');
 const { appSecret } = require('../config/keys');
 
 const posts = (app) => {
-    app.get('/posts', async (req, res) => {
+    const findPosts = async (req, res) => {
         try {
-            const posts = await Post.find();
+            const posts = await Post.find()
+            .sort({createdAt: 'desc'});
             res.json(posts)
         } catch (err) {
             res.send(`Error ${err}`)
         }
+    }
+    app.get('/posts', async (req, res) => {
+        findPosts(req, res);
     });
     // Submits a post - Needs to be req.json to submit
     app.post('/posts', withAuth, async (req, res) => {
@@ -28,18 +32,15 @@ const posts = (app) => {
             comments: [],
             postUid: decoded.id,
         });
-        try {
-            await post.save();
-            const posts = await Post.find();
-            res.json(posts)
-        } catch (err) {
-            res.send(`Error ${err}`)
-        }
+        await post.save();
+
+        findPosts(req, res);
     });
     // Specific post
     app.get('/posts/:postId', async (req, res) => {
         try {
             const post = await Post.findById(req.params.postId)
+            .sort({createdAt: 'desc'})
             res.status(200).json(post)
         } catch (err) {
             res.send(`Error ${err}`)
@@ -47,13 +48,8 @@ const posts = (app) => {
     })
     // Delete post
     app.delete('/posts/:postId', async (req, res) => {
-        try {
-            await Post.deleteOne({_id: req.params.postId});
-            const posts = await Post.find();
-            res.json(posts)
-        } catch (err) {
-            res.send(`Error ${err}`)
-        }
+        await Post.deleteOne({_id: req.params.postId});
+        findPosts(req, res);
     })
     // Update post
     app.patch('/posts/:postId', async (req, res) => {
@@ -88,12 +84,8 @@ const posts = (app) => {
                 }
             }
         }).exec();
-        try {
-            const posts = await Post.find();
-            res.json(posts)
-        } catch (err) {
-            res.send(`Error ${err}`)
-        }
+        
+        findPosts(req, res);
     })
     // Delete Comment
     app.delete('/posts/comment/:postId', withAuth, async (req, res) => {
@@ -107,17 +99,14 @@ const posts = (app) => {
                 }
             }
         }).exec();
-        try {
-            const posts = await Post.find();
-            res.json(posts)
-        } catch (err) {
-            res.send(`Error ${err}`)
-        }
+
+        findPosts(req, res);
     })
     // Get Users Posts
     app.get('/userPosts/:userId', async (req, res) => {
         try {
             const post = await Post.find({ postUid: req.params.userId })
+            .sort({createdAt: 'desc'});
             res.status(200).json(post)
         } catch (err) {
             res.send(`Error ${err}`)

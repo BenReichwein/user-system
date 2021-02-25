@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createPost, getPost, deletePost, createComment, deleteComment, getUid } from '../../actions';
+import { createPost, getPost, deletePost, createComment, deleteComment, addSaved, getUid } from '../../actions';
 import PostForm from '../forms/PostForm';
 
 class Post extends React.Component {
@@ -47,6 +47,7 @@ class Post extends React.Component {
                                     post.postUid === this.props.auth ? {} : {display: 'none'}}>Delete</button>
                                 <button onClick={()=> this.props.history.push(`/userProfile/${post.postUid}`)}>User</button>
                                 <button onClick={()=> this.props.createComment('Test Comment', post.postUid, post._id)}>Add Test Comment</button>
+                                <button onClick={()=> this.props.addSaved(post._id)}>Save</button>
                             </li>
                             )}
                         </ul>
@@ -82,5 +83,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  { createPost, getPost, deletePost, createComment, deleteComment, getUid }
+  { createPost, getPost, deletePost, createComment, deleteComment, addSaved, getUid }
 )(Post);
