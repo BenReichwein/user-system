@@ -123,7 +123,7 @@ const posts = (app) => {
             .sort({createdAt: 'desc'});
             res.status(200).json(post)
         } catch (err) {
-            res.send(`Error ${err}`)
+            res.status(500).send('Internal Error, Please try again')
         }
     })
 };
